@@ -1,0 +1,24 @@
+recipe-app/
+├── app.js # Main Express server
+├── models/ # Mongoose models
+│ └── Recipe.js # Recipe schema and model
+├── routes/ # Express route handlers
+│ └── recipes.js # CRUD routes for recipes
+├── views/ # EJS page templates
+│ ├── partials/ # Shared layout pieces
+│ │ ├── head.ejs # Head section with meta, title, Bootstrap
+│ │ ├── header.ejs # Navbar / site header
+│ │ └── footer.ejs # Site footer
+│ ├── home.ejs # Home / splash page
+│ ├── recipes.ejs # Public recipe list
+│ ├── recipe.ejs # Single recipe view
+│ ├── new.ejs # New recipe form
+│ └── edit.ejs # Edit recipe form
+├── public/ # Static assets
+│ └── css/
+│ └── styles.css # Custom CSS on top of Bootstrap
+├── .env # Environment variables (MongoDB URI, etc.)
+├── .gitignore # Ignore .env, node_modules, and other local files
+├── package.json # Dependencies and npm scripts
+└── README.md #setup and usage
+
