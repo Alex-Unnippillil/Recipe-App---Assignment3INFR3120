@@ -2,8 +2,9 @@
 
 // load the modules
 const express = require('express');
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const path = require('path');
+
 
 // load environment variables
 dotenv.config();
@@ -43,5 +44,5 @@ app.get('/', (req, res) => {
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server started on http://localhost:${PORT}`);
+  console.log(`Server start: http://localhost:${PORT}`);
 });
