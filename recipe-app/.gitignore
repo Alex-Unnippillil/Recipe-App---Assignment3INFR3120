@@ -6,7 +6,4 @@ node_modules/
 
 # Logs
 npm-debug.log*
-
-
-
 # this keeps the repo clean of large dependencies files and secrets 
