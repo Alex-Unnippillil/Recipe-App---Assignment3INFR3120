@@ -1,0 +1,28 @@
+/* public/css/styles.css
+Styles for Recipe Share application
+ */
+
+body {
+  background-color: #f7fafc;
+}
+
+/* Navbar brand tweaks */
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+/* Hero section on the home page */
+.hero {
+  background: linear-gradient(135deg, #0d6efd, #20c997);
+}
+
+/* Recipe cards on the home page */
+.recipe-card {
+  transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+}
+
+.recipe-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(15, 23, 42, 0.15);
+}

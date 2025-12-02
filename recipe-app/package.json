@@ -1,7 +1,7 @@
 {
   "name": "recipe-app",
   "version": "1.0.0",
-  "description": "A recipe management application",
+  "description": "A minimal recipe management application for INFR3120 Assignment 3",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -10,14 +10,13 @@
   "keywords": [
     "recipe",
     "express",
-    "mongodb"
+    "mongodb",
+    "ejs"
   ],
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.51.1",
-    "bootstrap": "^5.3.8",
-    "dotenv": "^17.2.3",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
-    "express": "^5.2.1",
-    "mongoose": "^9.0.0"
+    "express": "^4.19.2",
+    "mongoose": "^7.6.0"
   }
 }
