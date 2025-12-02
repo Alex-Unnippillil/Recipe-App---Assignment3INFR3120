@@ -9,48 +9,39 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // Import the Recipe routes module
+const connectDB = require('./config/db');
 const recipeRoutes = require('./routes/recipes');
 
 // create an express application
 const app = express();
 
+// Connect to MongoDB
+connectDB();
+
+
 // Configure view engine as EJStemplating
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // Middleware parse incoming form data
 app.use(express.urlencoded({ extended: true }));
 
 
-// Serve static files from the public directory / css  , images, js
-app.use(express.static('public'));
+// Serve static files from the /public directory
+app.use(express.static(path.join(__dirname, 'public')));
 
-const mongoURI = process.env.MONGODB_URI;
-if (!mongoURI) {
-    console.error("Error: MONGODB_URI not set ");
-    process.exit(1);  // Exit if no connection 
-}
 
-mongoose.connect(mongoURI)
-    .then(() => console.log("Connected to MongoDB database"))
-    .catch(err => {
-        console.error("Failed to connect to MongoDB:", err);
-        process.exit(1);
-    });
-
-// Root route - redirect to recipes home page
-app.get('/', (req, res) => {
-    res.redirect('/recipes');
-});
-
+// use routes /recipes
 app.use('/recipes', recipeRoutes);
 
-// Redirect root URL to recipes home page
+// Root route: redirect all traffic
 app.get('/', (req, res) => {
-    res.redirect('/recipes');
+  res.redirect('/recipes');
 });
 
 
+// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(` Server started - port:${PORT}. http://localhost:${PORT}/`);
+  console.log(`🚀 Server started on http://localhost:${PORT}`);
 });
