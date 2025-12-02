@@ -30,14 +30,27 @@ if (!mongoURI) {
     process.exit(1);  // Exit if no connection 
 }
 
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(mongoURI)
     .then(() => console.log("Connected to MongoDB database"))
     .catch(err => {
         console.error("Failed to connect to MongoDB:", err);
         process.exit(1);
     });
+
+// Root route - redirect to recipes home page
+app.get('/', (req, res) => {
+    res.redirect('/recipes');
+});
+
 app.use('/recipes', recipeRoutes);
 
+// Redirect root URL to recipes home page
+app.get('/', (req, res) => {
+    res.redirect('/recipes');
+});
+
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(` Server started - port:${PORT}. http://localhost:${PORT}/`);
 });

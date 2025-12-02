@@ -60,14 +60,19 @@ router.get('/:id', async (req, res) => {
     try {
         const recipeId = req.params.id;
         const recipe = await Recipe.findById(recipeId);
+
         if (!recipe) {
             return res.status(404).send("Recipe not found");
         }
+
+        // If found, render the detail page
         res.render('recipe', { recipe });  // render recipe.ejs 
+    } catch (err) {
         console.error("Error Fetching recipe details :", err);
         res.status(500).send("Server Error: Could not Retrieve recipe");
     }
 });
+
 
 // Route: GET "/recipes/:id/edit" - Show edit form existing recipes
 router.get('/:id/edit', async (req, res) => {
