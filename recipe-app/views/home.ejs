@@ -1,0 +1,44 @@
+<!-- views/home.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head'); %>
+</head>
+<body>
+  <%- include('partials/header'); %>
+
+  <main class="container py-5">
+    <!-- Hero section -->
+    <div class="p-5 mb-4 bg-info text-white rounded text-center">
+      <h1> ecipe Share!</h1>
+      <p class="lead">Discover and share recipes.</p>
+      <a href="/recipes/list" class="btn btn-light btn-lg">Browse Recipes</a>
+    </div>
+
+    <!-- show latest recipes -->
+    <% if (latestRecipes && latestRecipes.length > 0) { %>
+      <h2 class="mb-4">Latest Recipes</h2>
+      <div class="row">
+        <% latestRecipes.forEach(recipe => { %>
+          <div class="col-md-4">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title"><%= recipe.title %></h5>
+                <p class="card-text"><small class="text-muted">
+                  Cooking Time: <%= recipe.cookingTime %> min
+                </small></p>
+                <a href="/recipes/<%= recipe._id %>" class="btn btn-primary">View Recipe</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+
+  <%- include('partials/footer'); %>
+
+  <!-- Bootstrap JS bundle -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html>
