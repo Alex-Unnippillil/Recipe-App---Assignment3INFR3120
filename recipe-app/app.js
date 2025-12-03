@@ -1,47 +1,64 @@
-// app.js
-
-// load the modules
+// app.js\
 const express = require('express');
 const dotenv = require('dotenv');
 const path = require('path');
-
-
-// load environment variables
+const session = require('express-session');
+const passport = require('passport');
 dotenv.config();
 
-// Import the Recipe routes module
+// DB + routes
 const connectDB = require('./config/db');
 const recipeRoutes = require('./routes/recipes');
+const authRoutes = require('./routes/auth');
 
-// create an express application
+// Passport config
+require('./config/passport');
+
+// Create express app
 const app = express();
 
 // Connect to MongoDB
 connectDB();
 
-
-// Configure view engine as EJStemplating
+// View engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Middleware parse incoming form data
-app.use(express.urlencoded({ extended: true }));
-
-
-// Serve static files from the /public directory
+// Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Body parsing
+app.use(express.urlencoded({ extended: false }));
 
-// use routes /recipes
+// Session middleware for passport
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'dev secret',
+    resave: false,
+    saveUninitialized: false
+    // cookie: { secure: false }
+  })
+);
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Make logged-in user available in all views
+app.use((req, res, next) => {
+  res.locals.user = req.user;
+  next();
+});
+
+// Routes
+app.use('/auth', authRoutes);
 app.use('/recipes', recipeRoutes);
 
-// Root route: redirect all traffic
+// Root redirect
 app.get('/', (req, res) => {
   res.redirect('/recipes');
 });
 
-
-// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server start: http://localhost:${PORT}`);

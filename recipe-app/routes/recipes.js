@@ -4,6 +4,7 @@
 const express = require('express');
 const router = express.Router();
 const Recipe = require('../models/Recipe');
+const { ensureAuth } = require('../middleware/auth');
 
 // GET /recipes/ - Home page - show latest 3 recipes
 router.get('/', async (req, res) => {
@@ -17,33 +18,32 @@ router.get('/', async (req, res) => {
       latestRecipes
     });
   } catch (err) {
-    console.error('Error loading home page:', err);
-    res.status(500).send('Server Error: Home page');
+    console.error('Error fetching latest recipes:', err);
+    res.status(500).send('Server Error');
   }
 });
 
-// GET /recipes/list - Public page - lists all recipes
+// GET /recipes/list - list all recipes (public)
 router.get('/list', async (req, res) => {
   try {
-    const recipes = await Recipe.find().sort({ title: 1 });
-
+    const recipes = await Recipe.find().sort({ createdAt: -1 });
     res.render('recipes', {
       pageTitle: 'All Recipes',
       recipes
     });
   } catch (err) {
-    console.error('Error fetching recipe list:', err);
-    res.status(500).send('Server Error: Recipe list');
+    console.error('Error fetching recipes:', err);
+    res.status(500).send('Server Error');
   }
 });
 
-// GET /recipes/new - Form to create new recipe
-router.get('/new', (req, res) => {
+// GET /recipes/new - show new recipe form (AUTH ONLY)
+router.get('/new', ensureAuth, (req, res) => {
   res.render('new', { pageTitle: 'Add Recipe' });
 });
 
-// POST /recipes/ - Create new recipe in MongoDB
-router.post('/', async (req, res) => {
+// POST /recipes - create new recipe (AUTH ONLY)
+router.post('/', ensureAuth, async (req, res) => {
   try {
     const { title, ingredients, cookingTime } = req.body;
 
@@ -53,7 +53,6 @@ router.post('/', async (req, res) => {
       cookingTime
     });
 
-    console.log('New recipe created:', title);
     res.redirect('/recipes/list');
   } catch (err) {
     console.error('Error creating recipe:', err);
@@ -61,7 +60,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET /recipes/:id - Show single recipe
+// GET /recipes/:id - show single recipe (public)
 router.get('/:id', async (req, res) => {
   try {
     const recipe = await Recipe.findById(req.params.id);
@@ -75,13 +74,13 @@ router.get('/:id', async (req, res) => {
       recipe
     });
   } catch (err) {
-    console.error('Error fetching recipe details:', err);
-    res.status(500).send('Server Error: Could not retrieve recipe');
+    console.error('Error fetching recipe:', err);
+    res.status(500).send('Server Error: Could not fetch recipe');
   }
 });
 
-// GET /recipes/:id/edit - Show edit form recipe
-router.get('/:id/edit', async (req, res) => {
+// GET /recipes/:id/edit - edit form (AUTH ONLY)
+router.get('/:id/edit', ensureAuth, async (req, res) => {
   try {
     const recipe = await Recipe.findById(req.params.id);
 
@@ -90,17 +89,17 @@ router.get('/:id/edit', async (req, res) => {
     }
 
     res.render('edit', {
-      pageTitle: `Edit ${recipe.title}`,
+      pageTitle: 'Edit Recipe',
       recipe
     });
   } catch (err) {
-    console.error('Error loading edit form:', err);
-    res.status(500).send('Server Error: Could not load edit form');
+    console.error('Error fetching recipe for edit:', err);
+    res.status(500).send('Server Error: Could not fetch recipe for edit');
   }
 });
 
-// POST /recipes/:id/update - Handle update submission
-router.post('/:id/update', async (req, res) => {
+// POST /recipes/:id/update - update recipe (AUTH ONLY)
+router.post('/:id/update', ensureAuth, async (req, res) => {
   try {
     const { title, ingredients, cookingTime } = req.body;
 
@@ -110,7 +109,6 @@ router.post('/:id/update', async (req, res) => {
       cookingTime
     });
 
-    console.log('Recipe updated:', req.params.id);
     res.redirect(`/recipes/${req.params.id}`);
   } catch (err) {
     console.error('Error updating recipe:', err);
@@ -118,8 +116,8 @@ router.post('/:id/update', async (req, res) => {
   }
 });
 
-// POST /recipes/:id/delete - Delete a recipe with confirmation on client 
-router.post('/:id/delete', async (req, res) => {
+// POST /recipes/:id/delete - Delete recipe (AUTH ONLY)
+router.post('/:id/delete', ensureAuth, async (req, res) => {
   try {
     await Recipe.findByIdAndDelete(req.params.id);
     console.log('Recipe deleted:', req.params.id);
@@ -131,3 +129,4 @@ router.post('/:id/delete', async (req, res) => {
 });
 
 module.exports = router;
+

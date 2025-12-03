@@ -11,9 +11,34 @@
         <li class="nav-item">
           <a class="nav-link" href="/recipes/list">All Recipes</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/recipes/new">Add Recipe</a>
-        </li>
+
+        <% if (user) { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/recipes/new">Add Recipe</a>
+          </li>
+        <% } %>
+      </ul>
+
+      <ul class="navbar-nav ms-auto">
+        <% if (user) { %>
+          <li class="nav-item d-flex align-items-center me-2">
+            <% if (user.avatar) { %>
+              <img src="<%= user.avatar %>" alt="" width="32" height="32" class="rounded-circle me-2">
+            <% } %>
+            <span class="navbar-text">
+              <%= user.displayName %>
+            </span>
+          </li>
+          <li class="nav-item">
+            <form action="/auth/logout" method="POST" class="d-inline">
+              <button type="submit" class="btn btn-outline-light btn-sm">Sign out</button>
+            </form>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a href="/auth/login" class="btn btn-outline-light btn-sm">Sign in</a>
+          </li>
+        <% } %>
       </ul>
     </div>
   </div>

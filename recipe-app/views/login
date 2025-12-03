@@ -1,0 +1,26 @@
+<!-- views/login.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('partials/head'); %>
+  </head>
+  <body>
+    <%- include('partials/header'); %>
+
+    <main class="container my-5">
+      <h1 class="mb-4">Sign in</h1>
+      <p class="mb-3">Use a Google or GitHub account to sign in.</p>
+
+      <div class="d-grid gap-3 col-md-4">
+        <a class="btn btn-outline-primary" href="/auth/google">
+          Continue with Google!
+        </a>
+        <a class="btn btn-outline-dark" href="/auth/github">
+          Continue with GitHub!
+        </a>
+      </div>
+    </main>
+
+    <%- include('partials/footer'); %>
+  </body>
+</html>
