@@ -1,78 +1,84 @@
 // routes/auth.js
-
 const express = require('express');
-const passport = require('passport');
+const router = express.Router();
 const bcrypt = require('bcryptjs');
+const passport = require('passport');
 const User = require('../models/User');
 
-const router = express.Router();
-
-
-// Login page Google / GitHub / Email+Password
+// Show login page
 router.get('/login', (req, res) => {
-  res.render('login', { pageTitle: 'Sign in', error: null });
+  res.render('login'); 
 });
 
-// Email + password login
-router.post('/login/email', async (req, res, next) => {
+// Local login
+router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    if (!email || !password) {
-      return res.status(400).render('login', {
-        pageTitle: 'Sign in',
-        error: 'Please enter both email and password.'
-      });
+    const user = await User.findOne({ email }).exec();
+    if (!user || !user.passwordHash) {
+      // invalid email/ no password set
+      return res.render('login', { error: 'Invalid email or password' });
     }
 
-    if (password.length < 6) {
-      return res.status(400).render('login', {
-        pageTitle: 'Sign in',
-        error: 'Password should be at least 6 characters long.'
-      });
+    const match = await bcrypt.compare(password, user.passwordHash);
+    if (!match) {
+      return res.render('login', { error: 'Invalid email or password' });
     }
 
-    const normalizedEmail = email.toLowerCase();
-    let user = await User.findOne({ provider: 'local', email: normalizedEmail });
-
-    if (!user) {
-      // New local user create account
-      const passwordHash = await bcrypt.hash(password, 10);
-
-      user = await User.create({
-        provider: 'local',
-        providerId: normalizedEmail,
-        displayName: normalizedEmail.split('@')[0],
-        email: normalizedEmail,
-        passwordHash
-      });
-
-      console.log('Created new local user:', normalizedEmail);
-    } else {
-      // Existing local user- check password
-      const passwordMatches = await bcrypt.compare(password, user.passwordHash || '');
-
-      if (!passwordMatches) {
-        return res.status(400).render('login', {
-          pageTitle: 'Sign in',
-          error: 'Incorrect email or password.'
-        });
-      }
-    }
-
-    // Log the user in via Passport
     req.login(user, err => {
-      if (err) return next(err);
+      if (err) {
+        console.error(err);
+        return res.render('login', { error: 'Something went wrong. Try again.' });
+      }
       return res.redirect('/recipes');
     });
   } catch (err) {
-    console.error('Error with email login:', err);
-    next(err);
+    console.error(err);
+    res.render('login', { error: 'Something went wrong. Try again.' });
   }
 });
 
+// Local signup 
+router.get('/signup', (req, res) => {
+  res.render('signup'); 
+});
 
-// Google login
+router.post('/signup', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    let existing = await User.findOne({ email }).exec();
+    if (existing && existing.passwordHash) {
+      return res.render('signup', { error: 'Email already in use' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const user =
+      existing ||
+      new User({
+        email,
+        displayName: email.split('@')[0],
+      });
+
+    user.passwordHash = passwordHash;
+    await user.save();
+
+    req.login(user, err => {
+      if (err) {
+        console.error(err);
+        return res.render('signup', { error: 'Something went wrong. Try again.' });
+      }
+      return res.redirect('/recipes');
+    });
+  } catch (err) {
+    console.error(err);
+    res.render('signup', { error: 'Something went wrong. Try again.' });
+  }
+});
+
+// GOOGLE OAUTH
 router.get(
   '/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
@@ -81,15 +87,14 @@ router.get(
 router.get(
   '/google/callback',
   passport.authenticate('google', {
-    failureRedirect: '/auth/login'
+    failureRedirect: '/auth/login',
   }),
   (req, res) => {
-    // Successful authentication, redirect home
     res.redirect('/recipes');
   }
 );
 
-// GitHub login
+// GITHUB OAUTH
 router.get(
   '/github',
   passport.authenticate('github', { scope: ['user:email'] })
@@ -98,18 +103,20 @@ router.get(
 router.get(
   '/github/callback',
   passport.authenticate('github', {
-    failureRedirect: '/auth/login'
+    failureRedirect: '/auth/login',
   }),
   (req, res) => {
     res.redirect('/recipes');
   }
 );
 
-// Logout
+// LOGOUT
 router.post('/logout', (req, res, next) => {
   req.logout(err => {
-    if (err) return next(err);
-    res.redirect('/recipes');
+    if (err) {
+      return next(err);
+    }
+    res.redirect('/');
   });
 });
 

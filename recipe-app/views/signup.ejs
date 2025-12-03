@@ -7,7 +7,7 @@
     <%- include('partials/header'); %>
 
     <main class="container my-5">
-      <h1 class="mb-4">Sign In</h1>
+      <h1 class="mb-4">Sign Up</h1>
 
       <% if (typeof error !== 'undefined') { %>
         <div class="alert alert-danger" role="alert">
@@ -17,13 +17,13 @@
 
       <div class="row">
         <section class="col-md-5">
-          <h2 class="h5 mb-3">Sign in with OAuth</h2>
+          <h2 class="h5 mb-3">Sign up with OAuth</h2>
           <div class="d-grid gap-2">
             <a href="/auth/google" class="btn btn-outline-danger">
-              Sign in with Google
+              Sign up with Google
             </a>
             <a href="/auth/github" class="btn btn-outline-dark">
-              Sign in with GitHub
+              Sign up with GitHub
             </a>
           </div>
         </section>
@@ -33,9 +33,9 @@
         </div>
 
         <section class="col-md-6">
-          <h2 class="h5 mb-3">Sign in with email</h2>
+          <h2 class="h5 mb-3">Sign up with email</h2>
 
-          <form action="/auth/login" method="POST" class="card card-body shadow-sm">
+          <form action="/auth/signup" method="POST" class="card card-body shadow-sm">
             <div class="mb-3">
               <label for="email" class="form-label">Email address</label>
               <input
@@ -55,18 +55,19 @@
                 name="password"
                 id="password"
                 class="form-control"
-                autocomplete="current-password"
+                autocomplete="new-password"
                 minlength="6"
                 required
               >
+              <div class="form-text">Minimum 6 characters</div>
             </div>
 
             <p class="text-muted small mb-3">
-              Don't have an account? <a href="/auth/signup">Sign up here</a>
+              Already have an account? <a href="/auth/login">Sign in here</a>
             </p>
 
             <button type="submit" class="btn btn-primary w-100">
-              Sign In
+              Sign Up
             </button>
           </form>
         </section>

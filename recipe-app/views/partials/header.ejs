@@ -12,7 +12,7 @@
           <a class="nav-link" href="/recipes/list">All Recipes</a>
         </li>
 
-        <% if (user) { %>
+        <% if (currentUser) { %>
           <li class="nav-item">
             <a class="nav-link" href="/recipes/new">Add Recipe</a>
           </li>
@@ -20,13 +20,13 @@
       </ul>
 
       <ul class="navbar-nav ms-auto">
-        <% if (user) { %>
+        <% if (currentUser) { %>
           <li class="nav-item d-flex align-items-center me-2">
-            <% if (user.avatar) { %>
-              <img src="<%= user.avatar %>" alt="" width="32" height="32" class="rounded-circle me-2">
+            <% if (currentUser.avatar) { %>
+              <img src="<%= currentUser.avatar %>" alt="" width="32" height="32" class="rounded-circle me-2">
             <% } %>
             <span class="navbar-text">
-              <%= (user.displayName || 'Account').slice(0, 20) %>
+              <%= (currentUser.displayName || 'Account').slice(0, 20) %>
             </span>
 
           </li>

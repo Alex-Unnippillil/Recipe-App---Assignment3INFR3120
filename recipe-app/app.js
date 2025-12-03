@@ -1,52 +1,49 @@
-// app.js\
+// app.js
+require('dotenv').config();
 const express = require('express');
-const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');
-const passport = require('passport');
-dotenv.config();
+const bodyParser = require('body-parser'); // or use express.urlencoded
+const passport = require('./config/passport'); // <- we just created this
 
-// DB + routes
-const connectDB = require('./config/db');
 const recipeRoutes = require('./routes/recipes');
 const authRoutes = require('./routes/auth');
 
-// Passport config
-require('./config/passport');
-
-// Create express app
 const app = express();
 
-// Connect to MongoDB
-connectDB();
+// Mongo connect db
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error(err));
 
 // View engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Static files
+// Static 
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Body parsing
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
-// Session middleware for passport
+// Sessions 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'dev secret',
+    secret: process.env.SESSION_SECRET || 'dev-secret',
     resave: false,
-    saveUninitialized: false
-    // cookie: { secure: false }
+    saveUninitialized: false,
   })
 );
 
-// Passport middleware
+// Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Make logged-in user available in all views
+//  user available in all views
 app.use((req, res, next) => {
-  res.locals.user = req.user;
+  res.locals.currentUser = req.user;
   next();
 });
 
@@ -54,14 +51,17 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes);
 app.use('/recipes', recipeRoutes);
 
-// Root redirect
-app.get('/', (req, res) => {
-  res.redirect('/recipes');
+app.get('/', async (req, res) => {
+  try {
+    const Recipe = require('./models/Recipe');
+    const latestRecipes = await Recipe.find().sort({ createdAt: -1 }).limit(6).exec();
+    res.render('home', { latestRecipes });
+  } catch (err) {
+    console.error(err);
+    res.render('home', { latestRecipes: [] });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server start: http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

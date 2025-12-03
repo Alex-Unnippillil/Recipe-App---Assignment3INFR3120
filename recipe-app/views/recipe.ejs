@@ -20,10 +20,7 @@
         <hr class="my-4" />
 
         <div class="d-flex gap-2 flex-wrap">
-          <a href="/recipes/<%= recipe._id %>/edit" class="btn btn-primary">Edit</a>
-
-          <!-- Delete uses POST with JavaScript confirm -->
-          <% if (user) { %>
+          <% if (currentUser) { %>
             <a href="/recipes/<%= recipe._id %>/edit" class="btn btn-primary me-2">Edit</a>
 
             <form action="/recipes/<%= recipe._id %>/delete"
