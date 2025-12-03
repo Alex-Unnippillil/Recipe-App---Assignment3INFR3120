@@ -26,8 +26,9 @@
               <img src="<%= user.avatar %>" alt="" width="32" height="32" class="rounded-circle me-2">
             <% } %>
             <span class="navbar-text">
-              <%= user.displayName %>
+              <%= (user.displayName || 'Account').slice(0, 20) %>
             </span>
+
           </li>
           <li class="nav-item">
             <form action="/auth/logout" method="POST" class="d-inline">

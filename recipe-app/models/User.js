@@ -7,15 +7,21 @@ const UserSchema = new mongoose.Schema(
     provider: {
       type: String,
       required: true,
-      enum: ['google', 'github']
+      enum: ['google', 'github', 'local']   
     },
     providerId: {
       type: String,
-      required: true
+      required: true                        
     },
     displayName: String,
-    email: String,
-    avatar: String
+    email: {
+      type: String,
+      lowercase: true,
+      trim: true
+    },
+    avatar: String,
+    // use only for local accounts
+    passwordHash: String
   },
   {
     timestamps: true
